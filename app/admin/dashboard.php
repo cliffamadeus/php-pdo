@@ -1,5 +1,5 @@
 <?php
-require_once '../../config/config.php';
+require_once '/../../config/config.php';
 requireRole('admin');
 
 // Get statistics
