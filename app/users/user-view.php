@@ -69,25 +69,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resend_verification']
             </body>
             </html>
             ";
-            
-            // Queue email
-            $email_sql = "
-                INSERT INTO email_queue (recipient_email, recipient_name, subject, body, created_at)
-                VALUES (:email, :name, :subject, :body, NOW())
-            ";
-            $email_stmt = $pdo->prepare($email_sql);
-            $email_stmt->execute([
-                ':email'   => $userEmail,
-                ':name'    => $userEmail, 
-                ':subject' => $email_subject,
-                ':body'    => $email_body
-            ]);
-            
-            $message = "Verification email has been resent! Link: <a href='$verificationLink' target='_blank'>$verificationLink</a>";
-            $success = true;
+
+            // Send email using PHP mail()
+            $headers = "MIME-Version: 1.0" . "\r\n";
+            $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+            $headers .= "From: noreply@ics-dev.io" . "\r\n";
+
+            if (mail($userEmail, $email_subject, $email_body, $headers)) {
+                $message = "Verification email has been resent successfully! Link: <a href='$verificationLink' target='_blank'>$verificationLink</a>";
+                $success = true;
+            } else {
+                $message = "Verification email failed to send. Please try again later.";
+                $success = false;
+            }
         }
     } catch(PDOException $e) {
         $message = "Error resending verification: " . $e->getMessage();
+        $success = false;
     }
 }
 
