@@ -1,5 +1,6 @@
 <?php
-require_once '/../../config/config.php';
+require_once '../../config/config.php';
+require_once '../../config/functions.php';
 requireRole('admin');
 
 // Get statistics
@@ -27,7 +28,7 @@ renderHeader('Admin Dashboard');
     <a href="<?php echo BASE_URL; ?>/app/auth/signout.php">Logout</a>
 </div>
 
-<h1>Admin Dashboard</h1>
+<h1>Admin hehe Dashboard</h1>
 
 <div class="info-box">
     <strong>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?></strong><br>
@@ -38,7 +39,7 @@ renderHeader('Admin Dashboard');
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
     <div style="background: #007bff; color: white; padding: 20px; border-radius: 8px;">
-        <h3 style="margin: 0; font-size: 32px;"><?php echo $totalUsers; ?></h3>
+        <h3 style="margin: 0; font-size: 32px; font-color"><?php echo $totalUsers; ?></h3>
         <p style="margin: 5px 0 0; opacity: 0.9;">Total Users</p>
     </div>
     <div style="background: #dc3545; color: white; padding: 20px; border-radius: 8px;">
