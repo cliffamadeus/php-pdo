@@ -1,5 +1,6 @@
 <?php
-require_once '/../../config/config.php';
+require_once '../../config/config.php';
+require_once '../../config/functions.php';
 requireRole('admin');
 
 // Get statistics
@@ -18,61 +19,64 @@ $totalRegularUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 $stmt = $pdo->query("SELECT COUNT(*) as total FROM users WHERE is_verified = 0");
 $unverifiedUsers = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
 
-$title = 'Admin Dashboard';
-renderHeader($title);
+renderHeader('Admin Dashboard');
 ?>
 
-<div class="card">
-    <h2>Welcome, Administrator!</h2>
-    <p style="color: #666; margin-top: 10px;">You have full system control and access to all features.</p>
+<div class="nav">
+    <a href="<?php echo BASE_URL; ?>/app/users/dashboard.php">User Management</a>
+    <a href="<?php echo BASE_URL; ?>/app/users/user-create.php">Create User</a>
+    <a href="<?php echo BASE_URL; ?>/app/auth/signout.php">Logout</a>
+</div>
+
+<h1>Admin hehe Dashboard</h1>
+
+<div class="info-box">
+    <strong>Welcome, <?php echo htmlspecialchars($_SESSION['email']); ?></strong><br>
+    Role: <span class="badge badge-admin">Admin</span>
 </div>
 
 <h2>System Statistics</h2>
 
-<div class="stat-cards">
-    <div class="stat-card" style="border-left: 4px solid #1976d2;">
-        <h3><?php echo $totalUsers; ?></h3>
-        <p>Total Users</p>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+    <div style="background: #007bff; color: white; padding: 20px; border-radius: 8px;">
+        <h3 style="margin: 0; font-size: 32px; font-color"><?php echo $totalUsers; ?></h3>
+        <p style="margin: 5px 0 0; opacity: 0.9;">Total Users</p>
     </div>
-    <div class="stat-card" style="border-left: 4px solid #ef5350;">
-        <h3><?php echo $totalAdmins; ?></h3>
-        <p>Admins</p>
+    <div style="background: #dc3545; color: white; padding: 20px; border-radius: 8px;">
+        <h3 style="margin: 0; font-size: 32px;"><?php echo $totalAdmins; ?></h3>
+        <p style="margin: 5px 0 0; opacity: 0.9;">Admins</p>
     </div>
-    <div class="stat-card" style="border-left: 4px solid #ffa726;">
-        <h3><?php echo $totalManagers; ?></h3>
-        <p>Managers</p>
+    <div style="background: #ffc107; color: #333; padding: 20px; border-radius: 8px;">
+        <h3 style="margin: 0; font-size: 32px;"><?php echo $totalManagers; ?></h3>
+        <p style="margin: 5px 0 0; opacity: 0.9;">Managers</p>
     </div>
-    <div class="stat-card" style="border-left: 4px solid #66bb6a;">
-        <h3><?php echo $totalRegularUsers; ?></h3>
-        <p>Regular Users</p>
+    <div style="background: #28a745; color: white; padding: 20px; border-radius: 8px;">
+        <h3 style="margin: 0; font-size: 32px;"><?php echo $totalRegularUsers; ?></h3>
+        <p style="margin: 5px 0 0; opacity: 0.9;">Regular Users</p>
     </div>
-    <div class="stat-card" style="border-left: 4px solid #bdbdbd;">
-        <h3><?php echo $unverifiedUsers; ?></h3>
-        <p>Unverified</p>
+    <div style="background: #6c757d; color: white; padding: 20px; border-radius: 8px;">
+        <h3 style="margin: 0; font-size: 32px;"><?php echo $unverifiedUsers; ?></h3>
+        <p style="margin: 5px 0 0; opacity: 0.9;">Unverified</p>
     </div>
 </div>
 
-<div class="card">
-    <h2>Admin Capabilities</h2>
-    <ul style="margin: 15px 0 0 20px; line-height: 1.8;">
-        <li><strong>Full System Control:</strong> Manage all users, roles, and permissions</li>
-        <li><strong>Create/Edit/Delete:</strong> All user types (Admin, Manager, User)</li>
-        <li><strong>View Everything:</strong> Access to all dashboards and data</li>
-        <li><strong>System Configuration:</strong> Manage application settings</li>
-        <li><strong>Restriction:</strong> Cannot delete own account (safety measure)</li>
-    </ul>
-</div>
+<h2>Admin Capabilities:</h2>
+<ul>
+    <li><strong>Full System Control:</strong> Manage all users, roles, and permissions</li>
+    <li><strong>Create/Edit/Delete:</strong> All user types (Admin, Manager, User)</li>
+    <li><strong>View Everything:</strong> Access to all dashboards and data</li>
+    <li><strong>System Configuration:</strong> Manage application settings</li>
+    <li><strong>Restriction:</strong> Cannot delete own account (safety measure)</li>
+</ul>
 
-<div class="card">
-    <h2>Access Hierarchy</h2>
-    <div style="padding: 15px; background: #f5f5f5; border-radius: 4px;">
-        <strong style="color: #ef5350;">Admin (You) → Full Control</strong><br>
-        <span style="margin-left: 20px;">↓ Can manage Managers</span><br>
-        <strong style="color: #ffa726;">Manager → Limited Control</strong><br>
-        <span style="margin-left: 20px;">↓ Can manage Users only</span><br>
-        <strong style="color: #66bb6a;">User → No Management Rights</strong><br>
-        <span style="margin-left: 20px;">↓ Can only view own profile</span>
-    </div>
+<h2>Access Hierarchy</h2>
+<div class="info-box">
+    <strong>Admin (You) → Full Control</strong><br>
+    ↓ Can manage Managers<br>
+    <strong>Manager → Limited Control</strong><br>
+    ↓ Can manage Users only<br>
+    <strong>User → No Management Rights</strong><br>
+    ↓ Can only view own profile
 </div>
 
 <?php renderFooter(); ?>

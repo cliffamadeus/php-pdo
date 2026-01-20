@@ -1,5 +1,6 @@
 <?php
 require_once '../../config/config.php';
+require_once '../../config/functions.php';
 requireLogin();
 
 $userId = $_GET['user_id'] ?? 0;

@@ -1,5 +1,6 @@
 <?php
 require_once 'config/config.php';
+require_once 'config/functions.php';
 
 if (isLoggedIn()) {
     switch($_SESSION['role']) {
