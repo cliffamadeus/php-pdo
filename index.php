@@ -1,6 +1,7 @@
 <?php
 require_once 'config/config.php';
 require_once 'config/functions.php';
+require_once 'includes/activity-logger.php'; 
 
 if (isLoggedIn()) {
     switch($_SESSION['role']) {
@@ -27,9 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if ($user && password_verify($password, $user['password'])) {
+        // Successful login
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['email'] = $user['email'];
         $_SESSION['role'] = $user['role'];
+        
+        // Log successful login
+        logActivity($pdo, $user['id'], $user['email'], 'login', 'success');
         
         switch($user['role']) {
             case 'admin':
@@ -43,7 +48,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 break;
         }
     } else {
+        // Failed login
         $error = "Invalid credentials or email not verified";
+        
+        // Log failed login attempt
+        logActivity($pdo, null, $email, 'login', 'failed');
     }
 }
 

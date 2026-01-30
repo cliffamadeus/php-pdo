@@ -1,6 +1,7 @@
 <?php
 require_once '../../config/config.php';
 require_once '../../config/functions.php';
+require_once '../../includes/activity-logger.php';
 requireLogin();
 
 $userId = $_GET['user_id'] ?? 0;
@@ -19,20 +20,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     $updates = [];
     $params = [];
+    $changes = []; // Track what changed for logging
     
     if ($email && $email !== $user['email']) {
         $updates[] = "email = ?";
         $params[] = $email;
+        $changes[] = 'email';
     }
     
     if ($password) {
         $updates[] = "password = ?";
         $params[] = password_hash($password, PASSWORD_DEFAULT);
+        $changes[] = 'password';
     }
     
-    if ($role && in_array($role, ['admin', 'manager', 'user'])) {
+    if ($role && in_array($role, ['admin', 'manager', 'user']) && $role !== $user['role']) {
         $updates[] = "role = ?";
         $params[] = $role;
+        $changes[] = 'role';
     }
     
     if (!empty($updates)) {
@@ -46,6 +51,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = "User updated successfully!";
             $success = true;
             
+            // Log the update action by the admin/manager
+            logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_updated', 'success');
+            
+            // Log the change for the affected user
+            $changesStr = implode(', ', $changes);
+            logActivity($pdo, $userId, $user['email'], 'profile_updated', 'success');
+            
             // Refresh user data
             $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
             $stmt->execute([$userId]);
@@ -53,6 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
         } catch(PDOException $e) {
             $message = "Error updating user: " . $e->getMessage();
+            
+            // Log failed update
+            logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_updated', 'failed');
         }
     }
 }

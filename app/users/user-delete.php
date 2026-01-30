@@ -1,31 +1,42 @@
 <?php
 require_once '../../config/config.php';
 require_once '../../config/functions.php';
+require_once '../../includes/activity-logger.php';
 requireLogin();
 
 $userId = $_GET['user_id'] ?? 0;
 $message = '';
 $success = false;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    try {
-        $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
-        $stmt->execute([$userId]);
-        
-        if ($stmt->rowCount() > 0) {
-            redirect('/app/users/dashboard.php');
-        } else {
-            $message = "User not found.";
-        }
-    } catch(PDOException $e) {
-        $message = "Error deleting user: " . $e->getMessage();
-    }
-}
-
-// Get user details
+// Get user details BEFORE deletion
 $stmt = $pdo->prepare("SELECT id, email, role FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if ($user) {
+        try {
+            // Log deletion BEFORE actually deleting (so we have user info)
+            logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_deleted', 'success');
+            logActivity($pdo, $userId, $user['email'], 'account_deleted', 'success');
+            
+            // Now delete the user
+            $stmt = $pdo->prepare("DELETE FROM users WHERE id = ?");
+            $stmt->execute([$userId]);
+            
+            if ($stmt->rowCount() > 0) {
+                redirect('/app/users/dashboard.php');
+            } else {
+                $message = "User not found.";
+            }
+        } catch(PDOException $e) {
+            $message = "Error deleting user: " . $e->getMessage();
+            
+            // Log failed deletion
+            logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_deleted', 'failed');
+        }
+    }
+}
 
 renderHeader('Delete User');
 ?>

@@ -1,6 +1,7 @@
 <?php
 require_once '../../config/config.php';
 require_once '../../config/functions.php';
+require_once '../../includes/activity-logger.php';
 requireLogin();
 
 $userId = $_GET['user_id'] ?? 0;
@@ -79,14 +80,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resend_verification']
             if (mail($userEmail, $email_subject, $email_body, $headers)) {
                 $message = "Verification email has been resent successfully! Link: <a href='$verificationLink' target='_blank'>$verificationLink</a>";
                 $success = true;
+                
+                // Log successful resend
+                logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'verification_email_resent', 'success');
+                logActivity($pdo, $userId, $userEmail, 'verification_email_received', 'success');
             } else {
                 $message = "Verification email failed to send. Please try again later.";
                 $success = false;
+                
+                // Log failed resend
+                logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'verification_email_resent', 'failed');
             }
         }
     } catch(PDOException $e) {
         $message = "Error resending verification: " . $e->getMessage();
         $success = false;
+        
+        // Log error
+        logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'verification_email_resent', 'failed');
     }
 }
 
@@ -94,6 +105,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['resend_verification']
 $stmt = $pdo->prepare("SELECT id, email, role, is_verified, verification_token, email_verification_expires, created_at FROM users WHERE id = ?");
 $stmt->execute([$userId]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Log that this user profile was viewed
+if ($user) {
+    logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_viewed', 'success');
+}
 
 // Check if verification has expired
 $verificationExpired = false;

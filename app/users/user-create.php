@@ -1,6 +1,7 @@
 <?php
 require_once '../../config/config.php';
 require_once '../../config/functions.php';
+require_once '../../includes/activity-logger.php';
 requireLogin();
 
 $currentRole = $_SESSION['role'];
@@ -58,6 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':expires'  => $verification_expires
         ]);
 
+        $new_user_id = $pdo->lastInsertId();
+
+        // Log user creation
+        logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_created', 'success');
+        
+        // Log for the new user as well
+        logActivity($pdo, $new_user_id, $email, 'account_created', 'success');
+
         // Send verification email if requested
         if ($send_email) {
             $verificationLink = BASE_URL . "/app/auth/verify-email.php?token=" . $verification_token;
@@ -106,8 +115,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (mail($email, $email_subject, $email_body, $headers)) {
                 $message = "User created successfully! Verification email sent.";
+                
+                // Log email sent
+                logActivity($pdo, $new_user_id, $email, 'verification_email_sent', 'success');
             } else {
                 $message = "User created successfully! Verification email failed to send.";
+                
+                // Log email failure
+                logActivity($pdo, $new_user_id, $email, 'verification_email_sent', 'failed');
             }
         } else {
             $message = "User created successfully! (Email verification skipped)";
@@ -117,6 +132,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     } catch(PDOException $e) {
         $message = "Error creating user: " . $e->getMessage();
+        
+        // Log failed user creation
+        logActivity($pdo, $_SESSION['user_id'], $_SESSION['email'], 'user_created', 'failed');
     }
 }
 

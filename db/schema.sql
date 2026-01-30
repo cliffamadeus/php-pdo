@@ -23,13 +23,18 @@ INSERT INTO users (email, password, role, is_verified) VALUES
 ('manager@example.com', '$2y$10$HNfhClczEWBxcFuJwP53iu2Y75Tba7IEtmX8vX.1tp0dZ5EVt9CbO', 'manager', 1),
 ('user@example.com', '$2y$10$HNfhClczEWBxcFuJwP53iu2Y75Tba7IEtmX8vX.1tp0dZ5EVt9CbO', 'user', 1);
 
-CREATE TABLE email_queue (
+CREATE TABLE IF NOT EXISTS activity_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    recipient_email VARCHAR(255) NOT NULL,
-    recipient_name VARCHAR(255) NULL,
-    subject VARCHAR(255) NOT NULL,
-    body TEXT NOT NULL,
-    sent TINYINT(1) DEFAULT 0,
-    created_at DATETIME NOT NULL
-);
+    user_id INT NULL,  -- NULL for failed login attempts
+    email VARCHAR(255),
+    action VARCHAR(50) NOT NULL,
+    status ENUM('success', 'failed') DEFAULT 'success',
+    ip_address VARCHAR(45),
+    user_agent VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_user_id (user_id),
+    INDEX idx_action (action),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
