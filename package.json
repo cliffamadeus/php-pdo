@@ -1,0 +1,27 @@
+{
+  "name": "material-php-pdo",
+  "version": "1.0.0",
+  "description": "A simple role-based PHP PDO web application with email verification, activity logging, and basic authentication. Supports three roles:",
+  "main": "main.js",
+  "directories": {
+    "test": "tests",
+    "start":"electron ."
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nbsc-bsit/material-php-pdo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nbsc-bsit/material-php-pdo/issues"
+  },
+  "homepage": "https://github.com/nbsc-bsit/material-php-pdo#readme",
+  "devDependencies": {
+    "electron": "^40.1.0"
+  }
+}
