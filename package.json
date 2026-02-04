@@ -4,11 +4,11 @@
   "description": "A simple role-based PHP PDO web application with email verification, activity logging, and basic authentication. Supports three roles:",
   "main": "main.js",
   "directories": {
-    "test": "tests",
-    "start":"electron ."
+    "test": "tests"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start":"electron ."
   },
   "repository": {
     "type": "git",
