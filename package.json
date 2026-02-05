@@ -1,18 +1,30 @@
 {
-  "name": "remote-php-wrapper",
+  "name": "material-php-pdo",
   "version": "1.0.0",
+  "description": "A simple Electron wrapper for remote PHP PDO web application with role-based authentication.",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "build": "electron-builder"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nbsc-bsit/material-php-pdo.git"
+  },
+  "keywords": ["electron", "php", "pdo", "wrapper"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nbsc-bsit/material-php-pdo/issues"
+  },
+  "homepage": "https://github.com/nbsc-bsit/material-php-pdo#readme",
   "devDependencies": {
     "electron": "^26.0.0",
     "electron-builder": "^26.7.0"
   },
   "build": {
-    "appId": "com.icsdev.remotephp",
-    "productName": "ICS DEV PHP App",
+    "appId": "com.icsdev.materialphp",
+    "productName": "Material PHP PDO",
     "directories": {
       "buildResources": "assets",
       "output": "dist"
